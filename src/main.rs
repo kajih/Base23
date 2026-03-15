@@ -33,16 +33,16 @@ fn get_offset(s: char) -> Option<usize> {
     BASE23.find(s)
 }
 
-fn decode(s: &str) {
+fn decode(s: &str) -> Result<u64, String> {
     let mut sum: u64 = 0;
     for c in s.chars() {
-        let offset = get_offset(c).expect("Bad String") as u64;
-        sum = sum *23 + offset;
+        let offset = get_offset(c).ok_or("Bad Input")? as u64;
+        sum = sum * 23 + offset;
     }
-    println!("Base10: {}", sum);
+    Ok(sum)
 }
 
-fn encode(s: &u64) {
+fn encode(s: u64) -> Result<String, String> {
     let encode_vector = BASE23.chars().collect::<Vec<char>>();
     let mut acc = s.clone();
     let mut sum = String::new();
@@ -56,26 +56,26 @@ fn encode(s: &u64) {
         acc /= 23;
         sum.push(encode_vector[m as usize]);
     }
-    println!("Base23: {}", sum.chars().rev().collect::<String>());
+
+    Ok(sum.chars().rev().collect::<String>())
 }
 
-fn main() {
+fn main() -> Result<(), String> {
     let cli = Cli::parse();
-
     match cli.command {
         Commands::Encode { input } => {
-            encode(&input);
+            println!("{}", encode(input)?);
         }
         Commands::Decode { input } => {
-            decode(&input.to_uppercase());
+            println!("{}", decode(&input.to_uppercase())?);
         }
     }
+    Ok(())
 }
-
 
 #[cfg(test)]
 mod tests {
-   use super::*;
+    use super::*;
 
     #[test]
     fn test_get_offset() {
@@ -90,12 +90,31 @@ mod tests {
         assert_eq!(get_offset('M'), Some(22));
     }
 
-    /*
     #[test]
-    fn test_encode() {
-        assert_eq!();
+    fn test_encode_1() {
+        let res = encode(1).expect("encode failed");
+        assert_eq!("1", res);
     }
-     */
 
+    #[test]
+    fn test_encode_1000() {
+        let res = encode(1000).expect("encode failed");
+        assert_eq!("1KB", res);
+    }
 
+    #[test]
+    fn test_decode_1() {
+        let res = decode("1").expect("encode failed");
+        assert_eq!(1, res);
+    }
+        #[test]
+    fn test_decode_1kb() {
+        let res = decode("1KB").expect("encode failed");
+        assert_eq!(1000, res);
+    }
+    #[test]
+    fn test_decode_1000() {
+        let res = decode("1000").expect("encode failed");
+        assert_eq!(12167, res);
+    }
 }
