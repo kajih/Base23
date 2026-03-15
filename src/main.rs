@@ -44,7 +44,7 @@ fn decode(s: &str) -> Result<u64, String> {
 
 fn encode(s: u64) -> Result<String, String> {
     let encode_vector = BASE23.chars().collect::<Vec<char>>();
-    let mut acc = s.clone();
+    let mut acc = s;
     let mut sum = String::new();
 
     if acc == 0 {
@@ -104,17 +104,19 @@ mod tests {
 
     #[test]
     fn test_decode_1() {
-        let res = decode("1").expect("encode failed");
+        let res = decode("1").expect("decode failed");
         assert_eq!(1, res);
     }
-        #[test]
+
+    #[test]
     fn test_decode_1kb() {
-        let res = decode("1KB").expect("encode failed");
+        let res = decode("1KB").expect("decode failed");
         assert_eq!(1000, res);
     }
+
     #[test]
     fn test_decode_1000() {
-        let res = decode("1000").expect("encode failed");
+        let res = decode("1000").expect("decode failed");
         assert_eq!(12167, res);
     }
 }
