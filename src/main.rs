@@ -48,7 +48,7 @@ fn encode(s: u64) -> Result<String, String> {
     let mut sum = String::new();
 
     if acc == 0 {
-        sum = String::from("0");
+        return Ok(String::from("0"));
     }
 
     while acc > 0 {
@@ -97,9 +97,21 @@ mod tests {
     }
 
     #[test]
+    fn test_encode_0() {
+        let res = encode(0).expect("encode failed");
+        assert_eq!("0", res);
+    }
+
+    #[test]
     fn test_encode_1000() {
         let res = encode(1000).expect("encode failed");
         assert_eq!("1KB", res);
+    }
+
+    #[test]
+    fn test_decode_0() {
+        let res = decode("0").expect("decode failed");
+        assert_eq!(0, res);
     }
 
     #[test]
